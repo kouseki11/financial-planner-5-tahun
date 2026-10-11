@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { addTransaction, addValuation, deleteTransaction, updateAccount } from "@/server/asset-service";
 import { db } from "@/server/bootstrap";
-import { dateField, errorMessage, fail, formToObject, idField, ok, optionalRupiahField, optionalText, quantityE6Field, rupiahField, type ActionState } from "./helpers";
+import { dateField, errorMessage, fail, formToObject, idField, ok, optionalRupiahField, optionalText, quantityE6Field, rupiahField, rupiahOrZeroField, type ActionState } from "./helpers";
 
 function revalidateAll() {
   for (const p of ["/", "/realisasi", "/investasi", "/proyeksi", "/analisis", "/laporan"]) revalidatePath(p);
@@ -15,10 +15,10 @@ const txSchema = z.object({
   type: z.enum(["deposit", "withdraw", "buy", "sell", "dividend", "fee", "realized_pnl"]),
   tradeDate: dateField,
   symbol: optionalText,
-  quantityE6: z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? undefined : v), quantityE6Field.optional()),
-  pricePerUnit: z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? undefined : v), rupiahField.optional()),
-  fee: z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? "0" : v), rupiahField),
-  amount: z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? "0" : v), rupiahField),
+  quantityE6: z.preprocess((v) => (v === undefined || (typeof v === "string" && v.trim() === "") ? undefined : v), quantityE6Field.optional()),
+  pricePerUnit: z.preprocess((v) => (v === undefined || (typeof v === "string" && v.trim() === "") ? undefined : v), rupiahField.optional()),
+  fee: rupiahOrZeroField,
+  amount: rupiahOrZeroField,
   note: optionalText,
 });
 

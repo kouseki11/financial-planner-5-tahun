@@ -44,7 +44,11 @@ export const monthField = z.string().refine(isValidMonthKey, "Format bulan harus
 export const dateField = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format tanggal harus YYYY-MM-DD");
 export const idField = z.coerce.number().int().positive();
 export const boolField = z.preprocess((v) => v === "on" || v === "true" || v === true || v === "1", z.boolean());
-export const optionalText = z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? null : v), z.string().max(500).nullable());
+/** Teks opsional: field tidak ada / kosong → null. */
+export const optionalText = z.preprocess((v) => (v === undefined || v === null || (typeof v === "string" && v.trim() === "") ? null : v), z.string().max(500).nullable());
+
+/** Rupiah opsional dengan default 0: field tidak ada / kosong → 0. */
+export const rupiahOrZeroField = z.preprocess((v) => (v === undefined || v === null || (typeof v === "string" && v.trim() === "") ? "0" : v), rupiahField);
 
 /** Kuantitas desimal ("0,5") → integer × 1e6. */
 export const quantityE6Field = z.preprocess((v) => {
