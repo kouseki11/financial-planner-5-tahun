@@ -11,11 +11,13 @@ import { formatMonthLabel } from "@/lib/months";
 import type { ActionState } from "@/server/actions/helpers";
 import { addSalaryChangeAction, previewSalaryChangeAction } from "@/server/actions/salary-actions";
 import type { SalaryPreview } from "@/server/salary-service";
+import { useHydrated } from "@/components/use-hydrated";
 
 export function SalaryForm({ defaultMonth }: { defaultMonth: string }) {
   const [preview, previewAction, previewing] = useActionState<ActionState, FormData>(previewSalaryChangeAction, null);
   const [saved, saveAction, saving] = useActionState<ActionState, FormData>(addSalaryChangeAction, null);
   const p = preview?.ok ? (preview.data as SalaryPreview) : null;
+  const hydrated = useHydrated();
 
   return (
     <form className="space-y-4" action={saveAction}>
@@ -41,10 +43,10 @@ export function SalaryForm({ defaultMonth }: { defaultMonth: string }) {
         <Textarea id="note" name="note" placeholder="Kenaikan gaji / perubahan kontrak" rows={2} />
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <Button type="submit" formAction={previewAction} variant="outline" disabled={previewing}>
+        <Button type="submit" formAction={previewAction} variant="outline" disabled={previewing || !hydrated}>
           {previewing ? "Menghitung…" : "Preview dampak"}
         </Button>
-        <Button type="submit" disabled={saving || !p}>
+        <Button type="submit" disabled={saving || !p || !hydrated}>
           {saving ? "Menyimpan…" : "Simpan perubahan gaji"}
         </Button>
         {!p && <span className="text-xs text-muted-foreground">Lihat preview dulu sebelum menyimpan.</span>}

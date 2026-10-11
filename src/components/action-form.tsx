@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import type { ActionState } from "@/server/actions/helpers";
 import { cn } from "@/lib/utils";
+import { useHydrated } from "./use-hydrated";
 
 type Action = (prev: ActionState, fd: FormData) => Promise<ActionState>;
 
@@ -33,6 +34,7 @@ export function ActionForm({
 }) {
   const [state, formAction, pending] = useActionState<ActionState, FormData>(action, null);
   const ref = useRef<HTMLFormElement>(null);
+  const hydrated = useHydrated();
 
   useEffect(() => {
     if (state?.ok && resetOnSuccess) ref.current?.reset();
@@ -51,7 +53,7 @@ export function ActionForm({
     >
       {children}
       <div className={cn("flex items-center gap-3", inline && "contents")}>
-        <Button type="submit" disabled={pending} variant={variant} size={size}>
+        <Button type="submit" disabled={pending || !hydrated} variant={variant} size={size}>
           {pending ? "Menyimpan…" : submitLabel}
         </Button>
         {state?.message && !inline && (
