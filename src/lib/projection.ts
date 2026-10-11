@@ -168,6 +168,12 @@ export interface MonthInput {
   fees?: Partial<Record<AssetKind, number>>;
   /** true = bulan historis (angka aktual); return tidak disimulasikan, nilai mengikuti flows. */
   isActual?: boolean;
+  /**
+   * Hanya untuk bulan aktual: selisih nilai pasar aktual terhadap nilai arus kas
+   * (laba/rugi belum terealisasi yang dicatat lewat valuasi). Masuk sebagai `gain` agar
+   * nilai akhir bulan = nilai pasar aktual dan identitas akumulator tetap berlaku.
+   */
+  marketAdjustment?: Partial<Record<AssetKind, number>>;
 }
 
 export interface ProjectionInput {
@@ -272,7 +278,11 @@ export function runProjection(input: ProjectionInput): ProjectionResult {
       const rate = isActual ? 0 : rates[kind];
       const after = { ...state[kind], cumDeposits: state[kind].cumDeposits + flows.deposit, cumWithdrawals: state[kind].cumWithdrawals + (flows.withdrawal ?? 0) };
       const floor = kind === "trading" && !isActual ? floorForTrading(after, s) : null;
-      const am = projectAssetMonth(state[kind], flows, rate, floor);
+      let am = projectAssetMonth(state[kind], flows, rate, floor);
+      const adj = isActual ? (m.marketAdjustment?.[kind] ?? 0) : 0;
+      if (adj !== 0) {
+        am = { ...am, gain: am.gain + adj, closing: am.closing + adj, value: am.value + adj, cumGains: am.cumGains + adj };
+      }
       assets[kind] = am;
       state[kind] = am;
       totalContribution += flows.deposit;
