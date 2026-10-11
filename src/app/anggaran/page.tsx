@@ -30,7 +30,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: Promi
   return (
     <>
       <PageHeader title="Anggaran bulanan" description="Aturan alokasi per kategori menentukan anggaran setiap bulan berdasarkan gaji efektif. Mengubah aturan hanya menghitung ulang bulan yang belum terkunci.">
-        <ActionForm action={async () => regenerateBudgetsAction()} submitLabel="Hitung ulang bulan non-terkunci" variant="outline" size="sm" inline />
+        <ActionForm action={regenerateBudgetsAction} submitLabel="Hitung ulang bulan non-terkunci" variant="outline" size="sm" inline />
       </PageHeader>
 
       <Section title="Aturan alokasi" description="Prioritas kecil diproses lebih dulu. Metode: nominal tetap; persentase dari gaji; minimum + persentase dari sisa (sisa = gaji − nominal tetap − persentase − semua minimum).">

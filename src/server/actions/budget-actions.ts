@@ -75,7 +75,9 @@ export async function unlockMonthAction(_prev: ActionState, fd: FormData): Promi
   }
 }
 
-export async function regenerateBudgetsAction(): Promise<ActionState> {
+export async function regenerateBudgetsAction(prev: ActionState, fd: FormData): Promise<ActionState> {
+  void prev;
+  void fd;
   try {
     const d = await db();
     const r = await d.transaction((tx) => regenerateBudgets(tx, { reason: "Regenerasi manual" }));

@@ -17,6 +17,18 @@ Dokumen ini memetakan spesifikasi di `financial-planner-spec.md` ke tahapan impl
 
 Karena tidak ada kode lama, tidak ada risiko merombak struktur yang sudah ada. Struktur folder dibuat dari nol mengikuti konvensi Next.js App Router dengan direktori `src/`.
 
+### Status implementasi (12 Oktober 2026)
+
+Semua tahap §6 telah dikerjakan: 95 test Vitest lulus, `tsc` dan ESLint bersih, `next build` sukses, migrasi diterapkan ke Turso Cloud, dan seluruh halaman diuji merender (HTTP 200) baik dengan DB lokal maupun Turso. Deployment Vercel tinggal menyetel env dan push (lihat `README.md`).
+
+**Temuan spec:** tabel data awal §3 berjumlah **Rp7.200.000**, bukan Rp7.500.000 seperti tertulis di baris Total. Nominal spec dipertahankan; aplikasi menampilkan selisih Rp300.000 sebagai "sisa belum dialokasikan" (sesuai aturan validasi §4 spec) dan tidak mengubahnya diam-diam.
+
+**Penyesuaian desain selama implementasi:**
+- `monthly_budget_items` menyimpan `rule_snapshot` sehingga tampilan bulan terkunci dibangun dari snapshot, bukan aturan terbaru.
+- Mesin proyeksi menerima `marketAdjustment` pada bulan aktual terakhir agar nilai proyeksi awal = nilai pasar aktual (laba belum terealisasi masuk sebagai `gain`, biaya tetap terpisah).
+- Saldo awal akun diperlakukan sebagai *opening value*, bukan setoran, agar "Akumulasi setoran" tetap murni.
+- Batas rugi trading disimulasikan sebagai *floor* (asumsi stop-loss) dengan identitas akumulator tetap berlaku.
+
 ### Konvensi penting
 
 - **Uang disimpan sebagai integer rupiah** (kolom `integer` SQLite, 64-bit di JS lewat `number`, aman sampai 9 × 10^15). Tidak ada `float` untuk uang.
