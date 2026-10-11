@@ -128,3 +128,26 @@
     @apply font-sans;
   }
 }
+/* Palet grafik (dataviz, tervalidasi CVD): urutan tetap. */
+:root {
+  --viz-1: #2a78d6;
+  --viz-2: #eb6834;
+  --viz-3: #1baf7a;
+  --viz-4: #eda100;
+  --viz-5: #e87ba4;
+  --viz-6: #008300;
+  --viz-grid: #e5e5e3;
+  --viz-text: #0b0b0b;
+  --viz-muted: #6b6a66;
+}
+.dark {
+  --viz-1: #3987e5;
+  --viz-2: #d95926;
+  --viz-3: #199e70;
+  --viz-4: #c98500;
+  --viz-5: #d55181;
+  --viz-6: #008300;
+  --viz-grid: #333331;
+  --viz-text: #ffffff;
+  --viz-muted: #a3a29b;
+}
